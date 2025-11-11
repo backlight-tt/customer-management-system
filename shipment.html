@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户管理系统 - 发货管理</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f5f7fa;
+            --dark: #34495e;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .back-btn {
+            background: var(--warning);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .back-btn:hover {
+            background: #e67e22;
+        }
+        
+        .shipment-section, .customer-detail-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .customer-row {
+            cursor: pointer;
+        }
+        
+        .shipment-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-partial {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-ready {
+            background-color: #ffcccc;
+            color: #cc0000;
+            font-weight: bold;
+        }
+        
+        .value-display {
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .gift-total-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .gift-total-btn:hover {
+            background: #2980b9;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #7f8c8d;
+        }
+        
+        .profit-positive {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .profit-negative {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn-confirm {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>客户信用卡申请与礼品管理系统</h1>
+            <p>一站式管理客户申请、进度跟踪和礼品发放</p>
+            <div class="nav-menu">
+                <button class="nav-btn" onclick="location.href='index.html'">首页</button>
+                <button class="nav-btn" onclick="location.href='form.html'">信息填写</button>
+                <button class="nav-btn" onclick="location.href='customers.html'">客户统计</button>
+                <button class="nav-btn" onclick="location.href='shipment.html'">发货管理</button>
+            </div>
+        </header>
+        
+        <button class="back-btn" id="backBtn">返回发货列表</button>
+        
+        <div id="shipmentView">
+            <section class="shipment-section">
+                <h2>可发货客户列表</h2>
+                <div id="shipmentTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>客户姓名</th>
+                                <th>卡片数量</th>
+                                <th>发货状态</th>
+                                <th>已达标卡片</th>
+                                <th>卡片总价</th>
+                                <th>礼品</th>
+                                <th>礼品总价</th>
+                                <th>利润</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipmentTableBody">
+                            <!-- 可发货客户数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                    
+                    <div id="emptyState" class="empty-state">
+                        <p>暂无可发货客户</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div id="customerDetailView" style="display: none;">
+            <section class="customer-detail-section">
+                <div class="customer-header" id="customerHeader">
+                    <!-- 客户头部信息将在这里动态生成 -->
+                </div>
+                
+                <h2>申请人详情</h2>
+                <div id="customerDetailTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>申请人</th>
+                                <th>手机号</th>
+                                <th>申请银行</th>
+                                <th>申请日期</th>
+                                <th>卡片价值</th>
+                                <th>备注</th>
+                                <th>进度</th>
+                                <th>礼品</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerDetailTableBody">
+                            <!-- 申请人详情数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- 礼品总价输入模态框 -->
+    <div id="giftModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>设置礼品总价</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="giftCustomerInfo"></p>
+                <div class="form-group">
+                    <label for="giftTotal">礼品总价 (元):</label>
+                    <input type="number" id="giftTotal" min="0" step="0.01" placeholder="请输入礼品总价">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelGift">取消</button>
+                <button class="btn-confirm" id="confirmGift">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前选中的客户信息
+        let currentCustomer = null;
+        
+        // 初始化页面
+        function initPage() {
+            showShipmentList();
+            
+            // 返回按钮事件
+            document.getElementById('backBtn').addEventListener('click', function() {
+                document.getElementById('shipmentView').style.display = 'block';
+                document.getElementById('customerDetailView').style.display = 'none';
+                document.getElementById('backBtn').style.display = 'none';
+            });
+            
+            // 模态框事件
+            const modal = document.getElementById('giftModal');
+            const closeBtn = document.querySelector('.close');
+            const cancelBtn = document.getElementById('cancelGift');
+            const confirmBtn = document.getElementById('confirmGift');
+            
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            cancelBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            confirmBtn.onclick = function() {
+                setGiftTotal();
+            }
+            
+            // 点击模态框外部关闭
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+        
+        // 计算发货状态
+        function calculateShipmentStatus(applicants) {
+            // 过滤掉"未通过"的卡片
+            const validApplicants = applicants.filter(a => a.progress !== '未通过');
+            const total = validApplicants.length;
+            
+            if (total === 0) return { status: '未发货', class: 'status-not-shipped' };
+            
+            const qualified = validApplicants.filter(a => a.progress === '已达标').length;
+            const shipped = validApplicants.filter(a => a.progress === '已发货').length;
+            
+            if (shipped === total) return { status: '已发货', class: 'status-shipped' };
+            if (qualified === total) return { status: '可发货', class: 'status-ready' };
+            if (qualified > 0) return { status: '部分可发', class: 'status-partial' };
+            return { status: '未发货', class: 'status-not-shipped' };
+        }
+        
+        // 显示发货列表
+        function showShipmentList() {
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            const shipmentTableBody = document.getElementById('shipmentTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (customers.length === 0) {
+                shipmentTableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            // 按领礼品客户分组
+            const customerGroups = {};
+            customers.forEach(customer => {
+                if (!customerGroups[customer.receiverName]) {
+                    customerGroups[customer.receiverName] = [];
+                }
+                customerGroups[customer.receiverName].push(customer);
+            });
+            
+            // 筛选"部分可发"和"可发货"的客户
+            const shipmentCustomers = Object.keys(customerGroups).filter(receiverName => {
+                const shipmentStatus = calculateShipmentStatus(customerGroups[receiverName]);
+                return shipmentStatus.status === '部分可发' || shipmentStatus.status === '可发货';
+            });
+            
+            if (shipmentCustomers.length === 0) {
+                shipmentTableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // 生成发货列表数据
+            const shipmentListData = shipmentCustomers.map(receiverName => {
+                const group = customerGroups[receiverName];
+                const shipmentStatus = calculateShipmentStatus(group);
+                
+                // 计算卡片总价（已激活、已达标、已发货的卡片价值总和）
+                const cardTotal = group
+                    .filter(card => ['已激活', '已达标', '已发货'].includes(card.progress))
+                    .reduce((sum, card) => sum + parseFloat(card.cardValue), 0);
+                
+                // 计算已达标卡片数量
+                const qualifiedCards = group.filter(card => card.progress === '已达标' || card.progress === '已发货').length;
+                
+                // 获取礼品列表（去重）
+                const gifts = [...new Set(group.map(card => card.gift))];
+                
+                // 获取礼品总价（从本地存储中读取，如果没有则显示0）
+                const giftTotal = parseFloat(localStorage.getItem(`giftTotal_${receiverName}`)) || 0;
+                
+                // 计算利润
+                const profit = calculateProfit(group, cardTotal, giftTotal);
+                
+                return {
+                    receiverName,
+                    cardCount: group.length,
+                    shipmentStatus: shipmentStatus.status,
+                    shipmentClass: shipmentStatus.class,
+                    qualifiedCards,
+                    cardTotal: cardTotal.toFixed(2),
+                    gifts: gifts.join('、'),
+                    giftTotal: giftTotal.toFixed(2),
+                    profit: profit.toFixed(2),
+                    profitClass: profit >= 0 ? 'profit-positive' : 'profit-negative',
+                    applicants: group
+                };
+            });
+            
+            // 生成发货列表HTML
+            shipmentTableBody.innerHTML = shipmentListData.map(customer => `
+                <tr class="customer-row" data-receiver="${customer.receiverName}">
+                    <td>${customer.receiverName}</td>
+                    <td>${customer.cardCount}</td>
+                    <td>
+                        <span class="shipment-status ${customer.shipmentClass}">
+                            ${customer.shipmentStatus}
+                        </span>
+                    </td>
+                    <td>${customer.qualifiedCards}</td>
+                    <td class="value-display">${customer.cardTotal}元</td>
+                    <td>${customer.gifts}</td>
+                    <td>
+                        <span class="value-display">${customer.giftTotal}元</span>
+                        <button class="gift-total-btn" data-receiver="${customer.receiverName}">设置</button>
+                    </td>
+                    <td class="${customer.profitClass}">${customer.profit}元</td>
+                </tr>
+            `).join('');
+            
+            // 添加点击事件
+            document.querySelectorAll('.customer-row').forEach(row => {
+                row.addEventListener('click', function() {
+                    const receiverName = this.getAttribute('data-receiver');
+                    const customerData = shipmentListData.find(c => c.receiverName === receiverName);
+                    showCustomerDetail(receiverName, customerData.applicants);
+                });
+            });
+            
+            // 添加礼品总价按钮点击事件
+            document.querySelectorAll('.gift-total-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    const receiverName = this.getAttribute('data-receiver');
+                    openGiftModal(receiverName);
+                });
+            });
+        }
+        
+        // 计算利润
+        function calculateProfit(applicants, cardTotal, giftTotal) {
+            // 查找备注中的金额
+            let noteAmount = 0;
+            applicants.forEach(applicant => {
+                if (applicant.notes && applicant.notes !== '无') {
+                    // 使用正则表达式匹配备注中的数字
+                    const matches = applicant.notes.match(/\d+(\.\d+)?/g);
+                    if (matches) {
+                        matches.forEach(match => {
+                            noteAmount += parseFloat(match);
+                        });
+                    }
+                }
+            });
+            
+            return cardTotal + noteAmount - giftTotal;
+        }
+        
+        // 打开礼品总价模态框
+        function openGiftModal(receiverName) {
+            currentCustomer = receiverName;
+            
+            // 获取当前礼品总价
+            const currentGiftTotal = parseFloat(localStorage.getItem(`giftTotal_${receiverName}`)) || 0;
+            
+            // 更新模态框内容
+            document.getElementById('giftCustomerInfo').textContent = `客户: ${receiverName}`;
+            document.getElementById('giftTotal').value = currentGiftTotal;
+            
+            // 显示模态框
+            document.getElementById('giftModal').style.display = 'block';
+        }
+        
+        // 设置礼品总价
+        function setGiftTotal() {
+            if (!currentCustomer) return;
+            
+            const giftTotal = parseFloat(document.getElementById('giftTotal').value);
+            
+            if (isNaN(giftTotal) || giftTotal < 0) {
+                alert('请输入有效的礼品总价！');
+                return;
+            }
+            
+            // 保存到本地存储
+            localStorage.setItem(`giftTotal_${currentCustomer}`, giftTotal.toString());
+            
+            // 关闭模态框
+            document.getElementById('giftModal').style.display = 'none';
+            
+            // 重新显示发货列表
+            showShipmentList();
+            
+            alert('礼品总价已成功设置！');
+        }
+        
+        // 显示客户详情
+        function showCustomerDetail(receiverName, applicants) {
+            document.getElementById('shipmentView').style.display = 'none';
+            document.getElementById('customerDetailView').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
+            
+            // 显示客户头部信息
+            const customerHeader = document.getElementById('customerHeader');
+            const shipmentStatus = calculateShipmentStatus(applicants);
+            customerHeader.innerHTML = `
+                <h3>客户详情: ${receiverName}</h3>
+                <p>申请总数: ${applicants.length} | 发货状态: <span class="shipment-status ${shipmentStatus.class}">${shipmentStatus.status}</span></p>
+            `;
+            
+            // 显示申请人详情
+            const customerDetailTableBody = document.getElementById('customerDetailTableBody');
+            customerDetailTableBody.innerHTML = applicants.map(applicant => `
+                <tr>
+                    <td>${applicant.applicantName}</td>
+                    <td>${applicant.phone}</td>
+                    <td>${applicant.bank}</td>
+                    <td>${new Date(applicant.applyDate).toLocaleDateString()}</td>
+                    <td class="value-display">${applicant.cardValue}元</td>
+                    <td>${applicant.notes || '无'}</td>
+                    <td>${applicant.progress}</td>
+                    <td>${applicant.gift}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // 页面加载时初始化
+        window.onload = initPage;
+    </script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户管理系统 - 信息填写</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f5f7fa;
+            --dark: #34495e;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>客户信用卡申请与礼品管理系统</h1>
+            <p>一站式管理客户申请、进度跟踪和礼品发放</p>
+            <div class="nav-menu">
+                <button class="nav-btn" onclick="location.href='index.html'">首页</button>
+                <button class="nav-btn" onclick="location.href='form.html'">信息填写</button>
+                <button class="nav-btn" onclick="location.href='customers.html'">客户统计</button>
+                <button class="nav-btn" onclick="location.href='shipment.html'">发货管理</button>
+            </div>
+        </header>
+        
+        <section class="form-section">
+            <h2 id="formTitle">客户信息录入</h2>
+            <form id="customerForm">
+                <div class="form-group">
+                    <label for="receiverName">领礼品客户姓名 *</label>
+                    <input type="text" id="receiverName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="applicantName">申请人姓名 *</label>
+                    <input type="text" id="applicantName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">手机号码 *</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bank">申请银行 *</label>
+                    <select id="bank" required>
+                        <option value="">请选择银行</option>
+                        <option value="中信银行">中信银行</option>
+                        <option value="浦发银行">浦发银行</option>
+                        <option value="民生银行">民生银行</option>
+                        <option value="交通银行">交通银行</option>
+                        <option value="广发银行">广发银行</option>
+                        <option value="平安银行">平安银行</option>
+                        <option value="华夏银行">华夏银行</option>
+                        <option value="招商银行">招商银行</option>
+                        <option value="光大银行">光大银行</option>
+                        <option value="富邦华一银行">富邦华一银行</option>
+                        <option value="建设银行">建设银行</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="applyDate">申请日期 *</label>
+                    <input type="date" id="applyDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gift">礼品名称 *</label>
+                    <input type="text" id="gift" placeholder="请输入礼品名称" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardValue">卡片结算价值 (元) *</label>
+                    <input type="number" id="cardValue" min="0" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="progress">当前进度 *</label>
+                    <select id="progress" required>
+                        <option value="已申请">已申请</option>
+                        <option value="未通过">未通过</option>
+                        <option value="已通过">已通过</option>
+                        <option value="已激活">已激活</option>
+                        <option value="已达标">已达标</option>
+                        <option value="已发货">已发货</option>
+                        <option value="不激活">不激活</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">备注信息</label>
+                    <textarea id="notes" rows="3" placeholder="其他需要记录的信息"></textarea>
+                </div>
+                
+                <button type="submit" id="submitBtn">提交客户信息</button>
+            </form>
+            
+            <div class="success-message" id="successMessage">
+                客户信息已成功提交！
+            </div>
+        </section>
+        
+        <div class="qr-section">
+            <h3>扫码填写客户信息</h3>
+            <div class="qr-code">
+                <!-- 这里应该放置真实的二维码图片 -->
+                <span>二维码占位</span>
+            </div>
+            <p>扫描二维码可直接填写客户信息</p>
+            <p>或分享链接：<a href="#" id="shareLink">当前页面链接</a></p>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const params = {};
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            
+            return params;
+        }
+        
+        // 检查是否为编辑模式
+        function checkEditMode() {
+            const params = getUrlParams();
+            if (params.mode === 'edit') {
+                // 填充表单数据
+                document.getElementById('receiverName').value = params.receiverName || '';
+                document.getElementById('applicantName').value = params.applicantName || '';
+                document.getElementById('phone').value = params.phone || '';
+                document.getElementById('bank').value = params.bank || '';
+                document.getElementById('applyDate').value = params.applyDate || '';
+                document.getElementById('gift').value = params.gift || '';
+                document.getElementById('cardValue').value = params.cardValue || '';
+                document.getElementById('progress').value = params.progress || '已申请';
+                document.getElementById('notes').value = params.notes || '';
+                
+                // 修改表单标题和按钮文本
+                document.getElementById('formTitle').textContent = '修改客户信息';
+                document.getElementById('submitBtn').textContent = '更新客户信息';
+                
+                return true;
+            }
+            return false;
+        }
+        
+        // 设置默认申请日期为今天
+        document.getElementById('applyDate').valueAsDate = new Date();
+        
+        // 设置分享链接为当前页面URL
+        document.getElementById('shareLink').href = window.location.href;
+        document.getElementById('shareLink').textContent = window.location.href;
+        
+        // 检查是否为编辑模式
+        const isEditMode = checkEditMode();
+        
+        // 添加或更新客户信息
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const receiverName = document.getElementById('receiverName').value;
+            const applicantName = document.getElementById('applicantName').value;
+            const phone = document.getElementById('phone').value;
+            const bank = document.getElementById('bank').value;
+            const applyDate = document.getElementById('applyDate').value;
+            const gift = document.getElementById('gift').value;
+            const cardValue = document.getElementById('cardValue').value;
+            const progress = document.getElementById('progress').value;
+            const notes = document.getElementById('notes').value;
+            
+            const customer = {
+                receiverName,
+                applicantName,
+                phone,
+                bank,
+                applyDate,
+                gift,
+                cardValue: parseFloat(cardValue).toFixed(2),
+                progress,
+                notes,
+                timestamp: new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // 获取现有数据
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            
+            if (isEditMode) {
+                // 编辑模式：更新现有记录
+                const params = getUrlParams();
+                let updated = false;
+                
+                const updatedCustomers = customers.map(c => {
+                    // 通过多个字段匹配来确保找到正确的记录
+                    if (c.receiverName === params.receiverName &&
+                        c.applicantName === params.applicantName &&
+                        c.phone === params.phone &&
+                        c.bank === params.bank &&
+                        c.applyDate === params.applyDate &&
+                        c.gift === params.gift) {
+                        updated = true;
+                        return customer;
+                    }
+                    return c;
+                });
+                
+                if (updated) {
+                    localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+                    alert('客户信息已成功更新！');
+                    
+                    // 延迟跳转回客户统计页面
+                    setTimeout(() => {
+                        window.location.href = 'customers.html';
+                    }, 1000);
+                } else {
+                    alert('未找到要更新的记录，将添加为新记录');
+                    customers.push(customer);
+                    localStorage.setItem('customers', JSON.stringify(customers));
+                }
+            } else {
+                // 新增模式：添加新记录
+                customers.push(customer);
+                localStorage.setItem('customers', JSON.stringify(customers));
+            }
+            
+            // 显示成功消息
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            if (!isEditMode) {
+                // 新增模式下重置表单
+                document.getElementById('customerForm').reset();
+                document.getElementById('applyDate').valueAsDate = new Date();
+            }
+            
+            // 3秒后隐藏成功消息
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

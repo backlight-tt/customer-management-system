@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户管理系统 - 客户统计</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f5f7fa;
+            --dark: #34495e;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .back-btn {
+            background: var(--warning);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .back-btn:hover {
+            background: #e67e22;
+        }
+        
+        .customers-section, .applicants-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .customer-row {
+            cursor: pointer;
+        }
+        
+        .progress-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .progress-applied {
+            color: #333;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        
+        .progress-rejected {
+            background-color: #bdc3c7;
+            color: #2c3e50;
+        }
+        
+        .progress-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .progress-activated {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .progress-qualified {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .progress-shipped {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .shipment-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .status-not-shipped {
+            background-color: #bdc3c7;
+            color: #2c3e50;
+        }
+        
+        .status-partial {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-ready {
+            background-color: #ffcccc;
+            color: #cc0000;
+            font-weight: bold;
+        }
+        
+        .status-shipped {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #7f8c8d;
+        }
+        
+        .customer-detail {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .customer-detail h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .value-display {
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-edit, .btn-progress, .btn-delete {
+            padding: 5px 10px;
+            font-size: 14px;
+            width: auto;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-edit {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #e67e22;
+        }
+        
+        .btn-progress {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-progress:hover {
+            background: #2980b9;
+        }
+        
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn-confirm {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>客户信用卡申请与礼品管理系统</h1>
+            <p>一站式管理客户申请、进度跟踪和礼品发放</p>
+            <div class="nav-menu">
+                <button class="nav-btn" onclick="location.href='index.html'">首页</button>
+                <button class="nav-btn" onclick="location.href='form.html'">信息填写</button>
+                <button class="nav-btn" onclick="location.href='customers.html'">客户统计</button>
+                <button class="nav-btn" onclick="location.href='shipment.html'">发货管理</button>
+            </div>
+        </header>
+        
+        <button class="back-btn" id="backBtn">返回客户列表</button>
+        
+        <div id="customersView">
+            <section class="customers-section">
+                <h2>客户列表</h2>
+                <div id="customersTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>领礼品客户</th>
+                                <th>首次申请日期</th>
+                                <th>最后申请日期</th>
+                                <th>申请数量</th>
+                                <th>最近进度</th>
+                                <th>发货状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <!-- 客户数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                    
+                    <div id="emptyState" class="empty-state">
+                        <p>暂无客户数据</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div id="applicantsView" style="display: none;">
+            <section class="applicants-section">
+                <div class="customer-detail" id="customerDetail">
+                    <!-- 客户详情将在这里动态生成 -->
+                </div>
+                
+                <h2>申请人列表</h2>
+                <div id="applicantsTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>申请人</th>
+                                <th>手机号</th>
+                                <th>申请银行</th>
+                                <th>申请日期</th>
+                                <th>礼品</th>
+                                <th>卡片价值</th>
+                                <th>进度</th>
+                                <th>备注</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicantsTableBody">
+                            <!-- 申请人数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- 修改进度模态框 -->
+    <div id="progressModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>修改申请进度</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="modalApplicantInfo"></p>
+                <div class="form-group">
+                    <label for="newProgress">选择新进度:</label>
+                    <select id="newProgress">
+                        <option value="已申请">已申请</option>
+                        <option value="未通过">未通过</option>
+                        <option value="已通过">已通过</option>
+                        <option value="已激活">已激活</option>
+                        <option value="已达标">已达标</option>
+                        <option value="已发货">已发货</option>
+                        <option value="不激活">不激活</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelProgress">取消</button>
+                <button class="btn-confirm" id="confirmProgress">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前选中的卡片信息
+        let currentCard = null;
+        
+        // 初始化页面
+        function initPage() {
+            showCustomers();
+            
+            // 返回按钮事件
+            document.getElementById('backBtn').addEventListener('click', function() {
+                document.getElementById('customersView').style.display = 'block';
+                document.getElementById('applicantsView').style.display = 'none';
+                document.getElementById('backBtn').style.display = 'none';
+            });
+            
+            // 模态框事件
+            const modal = document.getElementById('progressModal');
+            const closeBtn = document.querySelector('.close');
+            const cancelBtn = document.getElementById('cancelProgress');
+            const confirmBtn = document.getElementById('confirmProgress');
+            
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            cancelBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            confirmBtn.onclick = function() {
+                updateApplicantProgress();
+            }
+            
+            // 点击模态框外部关闭
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+        
+        // 计算发货状态 - 修改为不计算"未通过"的卡片
+        function calculateShipmentStatus(applicants) {
+            // 过滤掉"未通过"的卡片
+            const validApplicants = applicants.filter(a => a.progress !== '未通过');
+            const total = validApplicants.length;
+            
+            if (total === 0) return { status: '未发货', class: 'status-not-shipped' };
+            
+            const qualified = validApplicants.filter(a => a.progress === '已达标').length;
+            const shipped = validApplicants.filter(a => a.progress === '已发货').length;
+            
+            if (shipped === total) return { status: '已发货', class: 'status-shipped' };
+            if (qualified === total) return { status: '可发货', class: 'status-ready' };
+            if (qualified > 0) return { status: '部分可发', class: 'status-partial' };
+            return { status: '未发货', class: 'status-not-shipped' };
+        }
+        
+        // 显示客户列表
+        function showCustomers() {
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            const customersTableBody = document.getElementById('customersTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (customers.length === 0) {
+                customersTableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // 按领礼品客户分组
+            const customerGroups = {};
+            customers.forEach(customer => {
+                if (!customerGroups[customer.receiverName]) {
+                    customerGroups[customer.receiverName] = [];
+                }
+                customerGroups[customer.receiverName].push(customer);
+            });
+            
+            // 生成客户列表数据
+            const customerListData = Object.keys(customerGroups).map(receiverName => {
+                const group = customerGroups[receiverName];
+                const firstApplyDate = new Date(Math.min(...group.map(c => new Date(c.applyDate))));
+                const lastApplyDate = new Date(Math.max(...group.map(c => new Date(c.applyDate))));
+                const latestProgress = group.reduce((latest, current) => {
+                    return new Date(current.lastUpdated || current.applyDate) > new Date(latest.lastUpdated || latest.applyDate) ? current : latest;
+                });
+                const shipmentStatus = calculateShipmentStatus(group);
+                
+                return {
+                    receiverName,
+                    firstApplyDate,
+                    lastApplyDate,
+                    count: group.length,
+                    latestProgress: latestProgress.progress,
+                    shipmentStatus: shipmentStatus.status,
+                    shipmentClass: shipmentStatus.class,
+                    applicants: group
+                };
+            });
+            
+            // 按最后申请日期从晚到早排序
+            customerListData.sort((a, b) => b.lastApplyDate - a.lastApplyDate);
+            
+            // 生成客户列表HTML
+            customersTableBody.innerHTML = customerListData.map(customer => `
+                <tr class="customer-row" data-receiver="${customer.receiverName}">
+                    <td>${customer.receiverName}</td>
+                    <td>${customer.firstApplyDate.toLocaleDateString()}</td>
+                    <td>${customer.lastApplyDate.toLocaleDateString()}</td>
+                    <td>${customer.count}</td>
+                    <td>
+                        <span class="progress-badge ${getProgressClass(customer.latestProgress)}">
+                            ${customer.latestProgress}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="shipment-status ${customer.shipmentClass}" data-receiver="${customer.receiverName}">
+                            ${customer.shipmentStatus}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // 添加点击事件
+            document.querySelectorAll('.customer-row').forEach(row => {
+                row.addEventListener('click', function() {
+                    const receiverName = this.getAttribute('data-receiver');
+                    const customerData = customerListData.find(c => c.receiverName === receiverName);
+                    showApplicants(receiverName, customerData.applicants);
+                });
+            });
+            
+            // 添加发货状态点击事件
+            document.querySelectorAll('.shipment-status').forEach(status => {
+                status.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    const receiverName = this.getAttribute('data-receiver');
+                    changeShipmentStatus(receiverName, customerGroups[receiverName]);
+                });
+            });
+        }
+        
+        // 修改发货状态
+        function changeShipmentStatus(receiverName, applicants) {
+            const currentStatus = calculateShipmentStatus(applicants).status;
+            let newStatus;
+            
+            if (currentStatus === '未发货') {
+                newStatus = '部分可发';
+            } else if (currentStatus === '部分可发') {
+                newStatus = '可发货';
+            } else if (currentStatus === '可发货') {
+                newStatus = '已发货';
+            } else {
+                newStatus = '未发货';
+            }
+            
+            if (newStatus === '已发货') {
+                if (confirm(`确定要将 ${receiverName} 的发货状态改为"已发货"吗？这将自动将所有卡片状态改为"已发货"。`)) {
+                    // 更新所有卡片状态为已发货
+                    const allCustomers = JSON.parse(localStorage.getItem('customers')) || [];
+                    allCustomers.forEach(customer => {
+                        if (customer.receiverName === receiverName) {
+                            customer.progress = '已发货';
+                            customer.lastUpdated = new Date().toISOString();
+                        }
+                    });
+                    localStorage.setItem('customers', JSON.stringify(allCustomers));
+                    showCustomers();
+                }
+            } else {
+                // 对于其他状态，只是更新显示，不修改卡片状态
+                showCustomers();
+            }
+        }
+        
+        // 显示申请人列表
+        function showApplicants(receiverName, applicants) {
+            document.getElementById('customersView').style.display = 'none';
+            document.getElementById('applicantsView').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
+            
+            // 显示客户详情
+            const customerDetail = document.getElementById('customerDetail');
+            const shipmentStatus = calculateShipmentStatus(applicants);
+            customerDetail.innerHTML = `
+                <h3>客户详情: ${receiverName}</h3>
+                <p>申请总数: ${applicants.length}</p>
+                <p>首次申请日期: ${new Date(Math.min(...applicants.map(a => new Date(a.applyDate)))).toLocaleDateString()}</p>
+                <p>最后申请日期: ${new Date(Math.max(...applicants.map(a => new Date(a.applyDate)))).toLocaleDateString()}</p>
+                <p>发货状态: <span class="shipment-status ${shipmentStatus.class}">${shipmentStatus.status}</span></p>
+            `;
+            
+            // 显示申请人列表
+            const applicantsTableBody = document.getElementById('applicantsTableBody');
+            applicantsTableBody.innerHTML = applicants.map((applicant, index) => {
+                // 生成唯一标识符，用于区分相同申请人姓名的不同卡片
+                const cardId = `${applicant.applicantName}-${applicant.bank}-${applicant.gift}-${applicant.applyDate}`;
+                
+                return `
+                <tr>
+                    <td>${applicant.applicantName}</td>
+                    <td>${applicant.phone}</td>
+                    <td>${applicant.bank}</td>
+                    <td>${new Date(applicant.applyDate).toLocaleDateString()}</td>
+                    <td>${applicant.gift}</td>
+                    <td class="value-display">${applicant.cardValue}元</td>
+                    <td>
+                        <span class="progress-badge ${getProgressClass(applicant.progress)}">
+                            ${applicant.progress}
+                        </span>
+                    </td>
+                    <td>${applicant.notes || '无'}</td>
+                    <td class="actions">
+                        <button class="btn-edit" data-card-id="${cardId}">修改</button>
+                        <button class="btn-progress" data-card-id="${cardId}">修改进度</button>
+                        <button class="btn-delete" data-card-id="${cardId}">删除</button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+            
+            // 为修改按钮添加事件监听器
+            document.querySelectorAll('.btn-edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const cardId = this.getAttribute('data-card-id');
+                    modifyApplicantCard(cardId, receiverName, applicants);
+                });
+            });
+            
+            // 为修改进度按钮添加事件监听器
+            document.querySelectorAll('.btn-progress').forEach(button => {
+                button.addEventListener('click', function() {
+                    const cardId = this.getAttribute('data-card-id');
+                    openProgressModal(cardId, receiverName, applicants);
+                });
+            });
+            
+            // 为删除按钮添加事件监听器
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const cardId = this.getAttribute('data-card-id');
+                    deleteApplicantCard(cardId, receiverName, applicants);
+                });
+            });
+        }
+        
+        // 修改申请人卡片信息
+        function modifyApplicantCard(cardId, receiverName, applicants) {
+            // 根据cardId找到对应的卡片
+            const card = applicants.find(applicant => {
+                const applicantCardId = `${applicant.applicantName}-${applicant.bank}-${applicant.gift}-${applicant.applyDate}`;
+                return applicantCardId === cardId;
+            });
+            
+            if (!card) return;
+            
+            // 将卡片信息编码为URL参数
+            const params = new URLSearchParams();
+            params.set('mode', 'edit');
+            params.set('receiverName', card.receiverName);
+            params.set('applicantName', card.applicantName);
+            params.set('phone', card.phone);
+            params.set('bank', card.bank);
+            params.set('applyDate', card.applyDate);
+            params.set('gift', card.gift);
+            params.set('cardValue', card.cardValue);
+            params.set('progress', card.progress);
+            params.set('notes', card.notes || '');
+            
+            // 跳转到信息填写页面
+            window.location.href = `form.html?${params.toString()}`;
+        }
+        
+        // 删除申请人卡片
+        function deleteApplicantCard(cardId, receiverName, applicants) {
+            // 找到要删除的卡片
+            const cardToDelete = applicants.find(applicant => {
+                const applicantCardId = `${applicant.applicantName}-${applicant.bank}-${applicant.gift}-${applicant.applyDate}`;
+                return applicantCardId === cardId;
+            });
+            
+            if (!cardToDelete) return;
+            
+            // 确认删除
+            if (confirm(`确定要删除 ${cardToDelete.applicantName} 的申请记录吗？\n银行: ${cardToDelete.bank}\n礼品: ${cardToDelete.gift}\n申请日期: ${new Date(cardToDelete.applyDate).toLocaleDateString()}\n\n此操作无法撤销，请确认是否继续。`)) {
+                // 从本地存储中删除该卡片
+                const allCustomers = JSON.parse(localStorage.getItem('customers')) || [];
+                const updatedCustomers = allCustomers.filter(customer => {
+                    const customerCardId = `${customer.applicantName}-${customer.bank}-${customer.gift}-${customer.applyDate}`;
+                    return customerCardId !== cardId;
+                });
+                
+                // 保存更新后的数据
+                localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+                
+                // 重新显示申请人列表
+                const remainingApplicants = updatedCustomers.filter(c => c.receiverName === receiverName);
+                if (remainingApplicants.length === 0) {
+                    // 如果没有剩余的申请人，返回客户列表
+                    document.getElementById('customersView').style.display = 'block';
+                    document.getElementById('applicantsView').style.display = 'none';
+                    document.getElementById('backBtn').style.display = 'none';
+                    showCustomers();
+                } else {
+                    showApplicants(receiverName, remainingApplicants);
+                }
+                
+                alert('申请记录已成功删除！');
+            }
+        }
+        
+        // 打开修改进度模态框
+        function openProgressModal(cardId, receiverName, applicants) {
+            // 根据cardId找到对应的卡片
+            const card = applicants.find(applicant => {
+                const applicantCardId = `${applicant.applicantName}-${applicant.bank}-${applicant.gift}-${applicant.applyDate}`;
+                return applicantCardId === cardId;
+            });
+            
+            if (!card) return;
+            
+            // 保存当前卡片信息
+            currentCard = {
+                cardId,
+                receiverName,
+                applicant: card
+            };
+            
+            // 更新模态框内容
+            document.getElementById('modalApplicantInfo').textContent = 
+                `申请人: ${card.applicantName} | 银行: ${card.bank} | 礼品: ${card.gift} | 申请日期: ${new Date(card.applyDate).toLocaleDateString()}`;
+            
+            // 设置当前进度
+            document.getElementById('newProgress').value = card.progress;
+            
+            // 显示模态框
+            document.getElementById('progressModal').style.display = 'block';
+        }
+        
+        // 更新申请人进度
+        function updateApplicantProgress() {
+            if (!currentCard) return;
+            
+            const newProgress = document.getElementById('newProgress').value;
+            const { receiverName, applicant } = currentCard;
+            
+            if (!['已申请', '未通过', '已通过', '已激活', '已达标', '已发货', '不激活'].includes(newProgress)) {
+                alert('请输入有效的进度状态！');
+                return;
+            }
+            
+            // 更新数据
+            const allCustomers = JSON.parse(localStorage.getItem('customers')) || [];
+            const updatedCustomers = allCustomers.map(customer => {
+                // 通过多个字段匹配来确保找到正确的卡片
+                if (customer.receiverName === receiverName &&
+                    customer.applicantName === applicant.applicantName &&
+                    customer.bank === applicant.bank &&
+                    customer.gift === applicant.gift &&
+                    customer.applyDate === applicant.applyDate) {
+                    return {
+                        ...customer,
+                        progress: newProgress,
+                        lastUpdated: new Date().toISOString()
+                    };
+                }
+                return customer;
+            });
+            
+            // 保存到本地存储
+            localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+            
+            // 关闭模态框
+            document.getElementById('progressModal').style.display = 'none';
+            
+            // 重新显示申请人列表
+            const applicants = updatedCustomers.filter(c => c.receiverName === receiverName);
+            showApplicants(receiverName, applicants);
+            
+            alert('进度已成功更新！');
+        }
+        
+        // 获取进度徽章类名
+        function getProgressClass(progress) {
+            switch(progress) {
+                case '已申请': return 'progress-applied';
+                case '未通过': return 'progress-rejected';
+                case '已通过': return 'progress-approved';
+                case '已激活': return 'progress-activated';
+                case '已达标': return 'progress-qualified';
+                case '已发货': return 'progress-shipped';
+                case '不激活': return 'progress-rejected';
+                default: return '';
+            }
+        }
+        
+        // 页面加载时初始化
+        window.onload = initPage;
+    </script>
+</body>
+</html>

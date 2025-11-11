@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户管理系统 - 首页</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f5f7fa;
+            --dark: #34495e;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .current-month {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .alert-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .alert-section h2 {
+            color: var(--danger);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-section h2::before {
+            content: "⚠️";
+            margin-right: 10px;
+        }
+        
+        .alert-item {
+            padding: 15px;
+            border-left: 4px solid var(--danger);
+            background-color: #fff5f5;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .recent-table {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .progress-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .progress-applied {
+            color: #333;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        
+        .progress-rejected {
+            background-color: #bdc3c7;
+            color: #2c3e50;
+        }
+        
+        .progress-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .progress-activated {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .progress-qualified {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .progress-shipped {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>客户信用卡申请与礼品管理系统</h1>
+            <p class="subtitle">一站式管理客户申请、进度跟踪和礼品发放</p>
+            <div class="nav-menu">
+                <button class="nav-btn" onclick="location.href='index.html'">首页</button>
+                <button class="nav-btn" onclick="location.href='form.html'">信息填写</button>
+                <button class="nav-btn" onclick="location.href='customers.html'">客户统计</button>
+                <button class="nav-btn" onclick="location.href='shipment.html'">发货管理</button>
+            </div>
+        </header>
+        
+        <div class="current-month" id="currentMonth"></div>
+        
+        <div class="dashboard">
+            <div class="stat-card">
+                <h3>当月申请数</h3>
+                <div class="stat-value" id="monthApplications">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>当月已通过</h3>
+                <div class="stat-value" id="monthApproved">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>当月已达标</h3>
+                <div class="stat-value" id="monthQualified">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>当月客户数</h3>
+                <div class="stat-value" id="monthCustomers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>当月未通过</h3>
+                <div class="stat-value" id="monthRejected">0</div>
+            </div>
+        </div>
+        
+        <div class="alert-section" id="alertSection">
+            <h2>超时激活提醒</h2>
+            <div id="alertContent">
+                <!-- 超时提醒内容将在这里动态生成 -->
+            </div>
+        </div>
+        
+        <div class="recent-table">
+            <h2>最近申请记录</h2>
+            <div id="recentTable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>领礼品客户</th>
+                            <th>申请人</th>
+                            <th>手机号</th>
+                            <th>申请银行</th>
+                            <th>申请日期</th>
+                            <th>进度</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTableBody">
+                        <!-- 最近申请数据将在这里动态生成 -->
+                    </tbody>
+                </table>
+                
+                <div id="emptyState" class="empty-state">
+                    <p>暂无申请记录</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取当前月份
+        function getCurrentMonth() {
+            const now = new Date();
+            return `${now.getFullYear()}年${now.getMonth() + 1}月`;
+        }
+        
+        // 初始化页面
+        function initPage() {
+            document.getElementById('currentMonth').textContent = getCurrentMonth();
+            updateDashboard();
+            showAlerts();
+            showRecentApplications();
+        }
+        
+        // 更新仪表板数据
+        function updateDashboard() {
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            // 筛选当月数据
+            const monthData = customers.filter(customer => {
+                const applyDate = new Date(customer.applyDate);
+                return applyDate.getMonth() === currentMonth && applyDate.getFullYear() === currentYear;
+            });
+            
+            // 计算当月客户数（去重）
+            const monthCustomers = [...new Set(monthData.map(c => c.receiverName))].length;
+            
+            // 更新统计数字
+            document.getElementById('monthApplications').textContent = monthData.length;
+            
+            // 当月已通过：计算"已通过""已激活""已达标""已发货"这四个进度状态的所有卡片数量
+            const approvedCount = monthData.filter(c => 
+                ['已通过', '已激活', '已达标', '已发货'].includes(c.progress)
+            ).length;
+            document.getElementById('monthApproved').textContent = approvedCount;
+            
+            // 当月已达标：计算"已达标""已发货"这两个进度状态的所有卡片数量
+            const qualifiedCount = monthData.filter(c => 
+                ['已达标', '已发货'].includes(c.progress)
+            ).length;
+            document.getElementById('monthQualified').textContent = qualifiedCount;
+            
+            document.getElementById('monthCustomers').textContent = monthCustomers;
+            document.getElementById('monthRejected').textContent = monthData.filter(c => c.progress === '未通过').length;
+        }
+        
+        // 显示超时提醒
+        function showAlerts() {
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            const alertSection = document.getElementById('alertSection');
+            const alertContent = document.getElementById('alertContent');
+            
+            // 找出审核通过超过10天但未激活的记录
+            const overdueCustomers = customers.filter(customer => {
+                if (customer.progress !== '已通过') return false;
+                
+                // 使用最后更新时间，如果没有则使用申请时间
+                const approvedDate = new Date(customer.lastUpdated || customer.applyDate);
+                const today = new Date();
+                const diffTime = today - approvedDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                return diffDays > 10;
+            });
+            
+            if (overdueCustomers.length === 0) {
+                alertSection.style.display = 'none';
+                return;
+            }
+            
+            alertSection.style.display = 'block';
+            alertContent.innerHTML = overdueCustomers.map(customer => {
+                const approvedDate = new Date(customer.lastUpdated || customer.applyDate);
+                const today = new Date();
+                const diffTime = today - approvedDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                return `
+                <div class="alert-item">
+                    <strong>${customer.receiverName}</strong> (申请人: ${customer.applicantName}) - 
+                    ${customer.phone} - ${customer.bank} - 
+                    审核通过日期: ${approvedDate.toLocaleDateString()} - 
+                    已超过${diffDays}天未激活
+                </div>
+                `;
+            }).join('');
+        }
+        
+        // 显示最近申请记录
+        function showRecentApplications() {
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            const recentTableBody = document.getElementById('recentTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (customers.length === 0) {
+                recentTableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // 按申请日期排序，取最近10条
+            const recentCustomers = customers
+                .sort((a, b) => new Date(b.applyDate) - new Date(a.applyDate))
+                .slice(0, 10);
+            
+            recentTableBody.innerHTML = recentCustomers.map(customer => `
+                <tr>
+                    <td>${customer.receiverName}</td>
+                    <td>${customer.applicantName}</td>
+                    <td>${customer.phone}</td>
+                    <td>${customer.bank}</td>
+                    <td>${new Date(customer.applyDate).toLocaleDateString()}</td>
+                    <td>
+                        <span class="progress-badge ${getProgressClass(customer.progress)}">
+                            ${customer.progress}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // 获取进度徽章类名
+        function getProgressClass(progress) {
+            switch(progress) {
+                case '已申请': return 'progress-applied';
+                case '未通过': return 'progress-rejected';
+                case '已通过': return 'progress-approved';
+                case '已激活': return 'progress-activated';
+                case '已达标': return 'progress-qualified';
+                case '已发货': return 'progress-shipped';
+                default: return '';
+            }
+        }
+        
+        // 页面加载时初始化
+        window.onload = initPage;
+    </script>
+</body>
+</html>
